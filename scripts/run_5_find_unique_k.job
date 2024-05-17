@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#SBATCH -p priority
+#SBATCH -t 3:0:0
+#SBATCH --mem=128G
+#SBATCH -o logs/step2_find_unique_kmers_%j.out
+#SBATCH -e logs/step2_find_unique_kmers_%j.out
+
+module load perl/5.24.0
+
+srun perl ./scripts/5_find_unique_kmers.pl -in data -fasta  data/input/GCF_023101765.2_AGI-APGP_CSIRO_Sfru_2.0_genomic.fna

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#SBATCH -p priority
+#SBATCH -t 3-0:0:0
+#SBATCH -c 4
+#SBATCH --mem=8G
+#SBATCH -o logs/step6blast_%j.out
+#SBATCH -e logs/step6blast_%j.err
+
+
+module load perl/5.24.0
+module load blast/2.6.0+
+
+perl scripts/6_blast_crisprs.pl -in data -fasta data/input/GCF_023101765.2_AGI-APGP_CSIRO_Sfru_2.0_genomic.fna -species spodoptera
+
+
+#### makeblastdb -in stephensi/fasta_files/sequences.fa -dbtype nucl -parse_seqids -title stephensi -out blast_dbs/stephensi

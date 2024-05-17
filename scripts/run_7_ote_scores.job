@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#SBATCH -p priority
+#SBATCH -t 0:10:0
+#SBATCH --mem=4G
+#SBATCH -o step7_ote_%j.out
+#SBATCH -e step7_ote_%j.err
+
+# IMPORTANT NOTE: TMP file used, only run one species at a time
+
+module load perl/5.24.0
+
+srun perl scripts/7_assign_ote_scores.pl -in data

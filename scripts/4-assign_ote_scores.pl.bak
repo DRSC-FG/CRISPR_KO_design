@@ -1,0 +1,60 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use feature 'say';
+use Getopt::Long;
+use Pod::Usage;
+
+# GLOBALS.
+my $DATA_DIR;
+my $usage = "Usage:
+  $0 -path root data path  [-len kmer_length]
+
+Quick Help:
+  -in	'aegypti', 'albopictus', or 'gambiae'";
+
+# Check flags; use default values if none given.
+GetOptions(
+	'path=s' => \$DATA_DIR,
+	help   => sub { pod2usage( $usage ) }
+) or pod2usage(2);
+pod2usage($usage) and exit unless $DATA_DIR;
+$DATA_DIR =~ s/\///;
+
+# Create temp file of ot scores pre-processed.
+my $cmd = 'tail -n +2 ' . $DATA_DIR . '/output/blast_report.txt | cut -f6,11-12,14 > ote_numbers.txt';
+`$cmd`;
+
+my $otes;
+
+print "+ Reading: (temp) ".$DATA_DIR . "ote_numbers.txt \n";
+open( OT, '<', 'ote_numbers.txt' ) or die $!;
+while (<OT>) {
+	chomp;
+	my ( $crispr, $ot1, $ot2, $type ) = split /\t/;
+	next if $type eq 'On-Target';
+
+	my $total = $ot1 + $ot2;
+	if ( $total != 0 and $total < 3 ) {
+		$total = 3;
+	}
+	$otes->{$crispr}{$total}++;
+}
+close OT;
+my $total = keys %$otes; 
+say $total . ' CRISPRs with OTE scores';
+
+# Remove temp file.
+print "+ re ote_numbers.txt \n";
+`rm ote_numbers.txt`;
+
+print "+ Writing: ".$DATA_DIR . "/output/ote_scores.txt \n";
+open( SUMMARY, '>', $DATA_DIR . '/output/ote_scores.txt' ) or die $!;
+foreach my $crispr ( keys %$otes ) {
+	my $ote3 = $otes->{$crispr}{3} // 0;
+	my $ote4 = $otes->{$crispr}{4} // 0;
+	my $ote5 = $otes->{$crispr}{5} // 0;
+	my $score = $ote3 + ( $ote4 / 10 ) + ( $ote5 / 100 );
+	say SUMMARY $crispr, "\t", $score;
+}
+close SUMMARY;

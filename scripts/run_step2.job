@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH -p priority
+#SBATCH -t 3:0:0
+#SBATCH -o logs/2_find_unique_kmers.out
+#SBATCH -e logs/2_find_unique_kmers.err
+#SBATCH --mem=200GB 
+module load perl/5.24.0
+
+srun perl scripts/2-find_unique_kmers.pl -path data
+
+
+
+

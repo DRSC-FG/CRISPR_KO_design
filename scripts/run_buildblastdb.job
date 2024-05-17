@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#SBATCH -p short
+#SBATCH -t 0-1:0:0
+#SBATCH -c 4
+#SBATCH --mem=4G
+#SBATCH -o logs/build_blastdb_%j.out
+#SBATCH -e logs/build_blastdb_%j.err
+
+
+SPECIESNAME=$1
+GENOMEFILE=$2
+module load perl/5.24.0
+module load blast/2.6.0+
+
+echo "Generating BLASTDB: $SPECIESNAME FILE $GENOMEFILE"
+
+mkdir -p $SPECIESNAME/blast_dbs/$SPECIESNAME
+
+#makeblastdb -in data/input/GCF_016920785.2_ASM1692078v2_genomic.fna -dbtype nucl -parse_seqids -title $SPECIESNAME -out data/blast_dbs/$SPECIESNAME/$SPECIESNAME/
+
+
+makeblastdb -in $GENOMEFILE -dbtype nucl -parse_seqids -title $SPECIESNAME -out $SPECIESNAME/blast_dbs/$SPECIESNAME/$SPECIESNAME/
+
+echo "output files"
+ls -la data/blast_dbs/$SPECIESNAME/
+
+echo "done"
+
+
+
