@@ -8,8 +8,8 @@ use Pod::Usage;
 # GLOBALS.
 my $DATA_PATH;
 my $fastafile='';
-my $species='tick';
-
+my $species='';
+my $genomicfastafile='';
 my $usage = "Usage:
   $0 -in data directory
 
@@ -19,8 +19,9 @@ Quick Help:
 
 # Check flags; use default values if none given.
 GetOptions(
-	'-in=s' => \$DATA_PATH,
+	'-datadir=s' => \$DATA_PATH,
 	'-fasta=s' => \$fastafile,
+        '-genomicfasta=s' => \$genomicfastafile,
 	'-species=s' => \$species,
 	help    => sub { pod2usage($usage) }
 ) or pod2usage(2);
@@ -28,12 +29,12 @@ pod2usage($usage) and exit unless $DATA_PATH;
 $DATA_PATH =~ s/\///;
 
 #my $sequences = read_fasta( $DATA_PATH . '/input/GCF_016920785.2_ASM1692078v2_genomic.fna' );
-my $sequences = read_fasta( $fastafile );
+my $sequences = read_fasta( $genomicfastafile );
 
 # Set up parameters for BLAST command.
 my $db     = $DATA_PATH . '/blast_dbs/' . $species .'/'.$species;
-;
-my $query  = $DATA_PATH . '/output/unique_kmers.fasta';
+#my $query  = $DATA_PATH . '/output/unique_kmers.fasta';
+my $query  = $fastafile;
 my $format = 6;
 my $size   = 10;
 
@@ -41,7 +42,7 @@ print "db:".$db;
 print "\n";
 
 blast_crispr({
-	db 			=> $db, 
+	db		=> $db, 
 	query 		=> $query,
 	format 		=> $format,
 	word_size 	=> $size

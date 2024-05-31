@@ -19,6 +19,19 @@ DATA_DIR=data_tick
 DATA_DIR2=../../data_tick
 TAXONID=6945
 
+
+DATA_DIR=data_aabf5
+DATA_DIR2=../../data_aabf5
+TAXONID=7160
+
+
+DATA_DIR=data_aalbo1
+DATA_DIR2=../../data_aalbo1
+TAXONID=7160
+
+
+
+
 you can run multiple species from this run directory. 
 each run has all data readfrom and stored in a "data" dir 
 
@@ -39,12 +52,16 @@ ln -s genomic.gtf base_features.gtf
 ln -s GCF_016920785.2_ASM1692078v2_genomic.fna genomic.fa
 cd -
 
+module load samtools/1.15.1
+samtools faidx $DATA_DIR/input/fasta.fna
+cut -f1-2 $DATA_DIR/input/fasta.fna > $DATA_DIR/output/fasta_lengths.csv
+
 
 
 #-----------------------------------
 # 0 FIND LONGEST CDS Transcripts
 
-python scripts/0-find_longest_CDS_transcripts.py -path $DATA_DIR  > logs/0_find_longest_cds_transcripts.txt
+python scripts/0-find_longest_CDS_transcripts.py -path $DATA_DIR  > $DATA_DIR/logs/0_find_longest_cds_transcripts.txt
 +Reading: $DATA_DIR/input/base_features.gtf 
 +Writing: $DATA_DIR/output/transcript_ids.csv
 +Writing: $DATA_DIR/ouput/transcript2gene.txt
@@ -63,7 +80,7 @@ cat $DATA_DIR/output/transcript_ids.csv | tr , \\n > $DATA_DIR/output/transcript
 
 in this case the gene name in in the .fa file as the value in the ()
 
-python scripts/1-get_crispr_designs.py -path $DATA_DIR > logs/1_get_crispr_designs.txt
+python scripts/1-get_crispr_designs.py -path $DATA_DIR > $DATA_DIR/logs/1_get_crispr_designs.txt
 +Reading: $DATA_DIR/output/transcript_ids.csv
 +Reading: $DATA_DIR/output/transcript.fa
 +Reading: $DATA_DIR/input//base_features.gtf
@@ -75,9 +92,9 @@ python scripts/1-get_crispr_designs.py -path $DATA_DIR > logs/1_get_crispr_desig
 
 #Uses a lot of memory, run with sbatch if an option
 
-sbatch scripts/run_2_find_unique_kmers.job
+sbatch scripts/run_2_find_unique_kmers.job $DATA_DIR
 
-#[perl scripts/2-find_unique_kmers.pl -path data]
+#[perl scripts/2-find_unique_kmers.pl -path $DATA_DIR]
 
 + Reading :$DATA_DIR/input/sequences.fa(1) 15 => CCCTCTCCCGCTCCG
 .......
@@ -90,7 +107,9 @@ sbatch scripts/run_2_find_unique_kmers.job
 #update the script and move
 
 sbatch scripts/run_buildblastdb.job $DATA_DIR $DATA_DIR/input/genomic.fa
-sbatch scripts/run_step3.job $DATA_DIR $DATA_DIR/input/genomic.fa
+sbatch scripts/run_step3.job $DATA_DIR $DATA_DIR/output/unique_kmers.fasta $DATA_DIR/input/genomic.fa
+----  perl scripts/3-blast_crisprs.pl -datadir data_aabf5 -fasta data_aabf5/output/unique_kmers.fasta  -genomicfasta    --species=data_aalbo1
+
 
 
 #-----------------------------------
