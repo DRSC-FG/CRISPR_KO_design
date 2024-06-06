@@ -15,7 +15,7 @@ if (len(sys.argv) == 3 and sys.argv[1] == '-in'):
 	species = sys.argv[2]
 else:
 	print('Error: wrong input format')
-	print('Usage: python 10-designs_gff3.py -in <species>\n')
+	print('Usage: python 10-designs_gff3.py -in <data_dir>\n')
 	exit()
 
 designs = {}

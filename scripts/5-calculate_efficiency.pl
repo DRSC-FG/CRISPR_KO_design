@@ -28,7 +28,7 @@ my $pvalues = load_pssm( 'constants/p_values.txt' );
 # Create temp file of unique CRISPR designs from seed_scores.txt.
 
 print  "+Writing (temp) uniq_guides.txt \n";
-`cut -f2 $DATA_DIR/output/seed_scores.txt | sort | uniq > uniq_guides.txt`;
+`cut -f2 $DATA_DIR/output/seed_scores.txt | sort | uniq > $DATA_DIR/output/uniq_guides.txt`;
 
 # Open files for reading and writing:
 #	1 - (r) text file with CRISPR sequences to score
@@ -38,7 +38,7 @@ open( SCORES, '>', $DATA_DIR . '/output/eff_scores.txt' ) or die $!;
 local $, = "\t";
 
 print  "+Reading (temp) uniq_guides.txt \n";
-open( CRISPRS, '<', 'uniq_guides.txt' ) or die $!;
+open( CRISPRS, '<', $DATA_DIR.'/output/uniq_guides.txt' ) or die $!;
 while (my $crispr = <CRISPRS>) {
 	chomp $crispr;
 	say SCORES $crispr, score_match( $crispr, $pvalues );
@@ -47,8 +47,8 @@ close SCORES;
 close CRISPRS;
 
 # Remove temp file.
-print  "+Removing (temp) uniq_guides.txt \n";
-`rm uniq_guides.txt`;
+#print  "+not Removing (temp) uniq_guides.txt \n";
+#`rm uniq_guides.txt`;
 
 # Returns matrix values from given file.
 sub load_pssm {

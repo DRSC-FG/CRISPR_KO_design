@@ -15,10 +15,10 @@ else:
 bad_designs = {}
 print ("+Reading: "+data_dir + '/output/blast_report.txt')
 with open(data_dir + '/output/blast_report.txt', 'r') as f:
-	for line in f:
-		line = line.strip('\n').split('\t')
-		if line[10] == '0' and line[11] == '0' and line[9][20] == 'X':
-			bad_designs[line[5]] = None
+    for line in f:
+        line = line.strip('\n').split('\t')
+        if line[10] == '0' and line[11] == '0' and line[9][20] == 'X':
+            bad_designs[line[5]] = None
 
 
 # Only include crisprs in this list.
@@ -26,29 +26,29 @@ crispr_designs = {}
 print ("+Reading: "+data_dir + '/output/crispr_designs.txt')
 count=0
 with open(data_dir + '/output/crispr_designs.txt', 'r') as f:
-	for line in f:
-		line = line.strip('\n').split('\t')
-                key=line[1]
-                count=count+1
-                if count<40:
-                    print (key)
-		crispr_designs[key]=0
+    for line in f:
+        line = line.strip('\n').split('\t')
+        key=line[1]
+        count=count+1
+        if count<40:
+            print (key)
+        crispr_designs[key]=0
 
 results = []
 print ("+Reading: "+data_dir + '/output/final_design_results.txt')
 with open(data_dir + '/output/final_design_results.txt', 'r') as f:
-	header = next(f)
-	for line in f:
-            splitLine = line.split('\t')
-            if splitLine[0] in bad_designs:
-                continue
-		# some designs w/ no on-target hits weren't being removed
-            if splitLine[2][0] == '0':
-                print("nohit:"+ line.split('\t')[0])
-                continue
-            if splitLine[0] not in crispr_designs:
-                print ("no design:"+line[0]);
-                continue
+    header = next(f)
+    for line in f:
+        splitLine = line.split('\t')
+        if splitLine[0] in bad_designs:
+            continue
+            # some designs w/ no on-target hits weren't being removed
+        if splitLine[2][0] == '0':
+            print("nohit:"+ line.split('\t')[0])
+            continue
+        if splitLine[0] not in crispr_designs:
+            print ("no design:"+line[0]);
+            continue
 
 
 
@@ -59,10 +59,10 @@ with open(data_dir + '/output/final_design_results.txt', 'r') as f:
             #				exit()
 
             #build up results
-            results.append(line)
+        results.append(line)
 
 print ("+Writing: "+data_dir + '/output/final_design_results_filtered.txt')
 with open(data_dir + '/output/final_design_results_filtered.txt', 'w') as out:
-	out.write(header)
-	for line in results:
-		out.write(line)
+    out.write(header)
+    for line in results:
+        out.write(line)
